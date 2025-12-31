@@ -1,0 +1,22 @@
+Évaluation des Performances du Modèle
+===================================
+Matrice de Confusion:
+[[447   3]
+ [ 28  22]]
+
+Rapport de Classification:
+              precision    recall  f1-score   support
+
+      Normal       0.94      0.99      0.97       450
+    Anomalie       0.88      0.44      0.59        50
+
+    accuracy                           0.94       500
+   macro avg       0.91      0.72      0.78       500
+weighted avg       0.93      0.94      0.93       500
+
+
+Interprétation:
+- Vrais Positifs (TP): Pannes correctement prédites
+- Faux Négatifs (FN): Pannes non détectées (risque élevé)
+- Faux Positifs (FP): Fausses alertes
+- Vrais Négatifs (TN): Fonctionnement normal correctement identifié

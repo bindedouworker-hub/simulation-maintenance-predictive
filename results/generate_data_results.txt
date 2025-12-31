@@ -1,0 +1,12 @@
+Données générées: 1000 échantillons
+Colonnes: ['cpu_temperature', 'voltage_vcc', 'fan_speed_rpm']
+Statistiques:
+       cpu_temperature  voltage_vcc  fan_speed_rpm
+count      1000.000000  1000.000000    1000.000000
+mean         41.944985     3.298731    1100.382286
+std           6.898991     0.098761     348.823632
+min          26.390637     2.966574     246.455662
+25%          36.134193     3.230088     815.138207
+50%          43.310788     3.295757    1158.704216
+75%          47.672916     3.367742    1386.170183
+max          57.928375     3.608495    1852.711004

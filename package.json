@@ -1,0 +1,19 @@
+{
+  "name": "maintenance-predictive-simulation",
+  "version": "1.0.0",
+  "description": "Simulation de maintenance prédictive hybride IT/Électronique",
+  "main": "scripts/main.py",
+  "scripts": {
+    "generate-data": "python scripts/generate_data.py",
+    "preprocess": "python scripts/data_preprocessing.py",
+    "simulate": "python scripts/maintenance_simulator.py",
+    "evaluate": "python scripts/evaluation.py"
+  },
+  "dependencies": {
+    "pandas": "^1.5.0",
+    "numpy": "^1.21.0",
+    "scikit-learn": "^1.0.0",
+    "tensorflow": "^2.10.0",
+    "matplotlib": "^3.5.0"
+  }
+}
