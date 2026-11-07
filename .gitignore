@@ -40,3 +40,7 @@ data/large_*.csv
 *.h5
 *.keras
 *.pkl
+
+# C-MAPSS : seul train_FD001 + labels RUL sont versionnés ; le fichier
+# de test (2,2 Mo, inutilisé actuellement) est téléchargé à la demande.
+data/CMAPSSData/test_FD*.txt

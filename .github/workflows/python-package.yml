@@ -47,6 +47,12 @@ jobs:
           python scripts/data_preprocessing.py
           python scripts/evaluation.py
 
+      - name: Audit de fiabilité (Monte-Carlo réduit)
+        run: python scripts/reliability_audit.py 30
+
+      - name: Benchmark sur données réelles (NASA C-MAPSS FD001)
+        run: python scripts/real_data_benchmark.py
+
       - name: Upload artifacts (plot & résultats)
         if: matrix.python-version == '3.12'
         uses: actions/upload-artifact@v4
@@ -55,4 +61,8 @@ jobs:
           path: |
             results/simulation_plot.png
             results/evaluation_results.txt
+            results/reliability_plot.png
+            results/reliability_report.txt
+            results/real_data_benchmark.png
+            results/real_data_benchmark.txt
           retention-days: 7

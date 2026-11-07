@@ -28,7 +28,8 @@ speed):
 1. **Data generation** — synthetic sensor streams: healthy signal
    (daily cycle + Gaussian noise) with **injected faults** (drift, spikes)
 2. **Anomaly detection (unsupervised)** — `IsolationForest` flags
-   abnormal windows without any labeled data
+   abnormal windows without any labeled data, upgraded with a
+   **seasonal-residual stage** for persistent drifts (see Reliability)
 3. **Preprocessing for deep learning** — Min-Max normalization +
    sliding-window sequences for time-series modeling
 4. **LSTM model (RUL)** — stacked `LSTM → LSTM → Dense` network
@@ -36,28 +37,69 @@ speed):
 5. **Evaluation** — confusion matrix, precision/recall/F1, with an eye
    on **false negatives** (missed failures = the costly mistakes)
 
-## 📸 Results preview
+## 🔬 Reliability & real-data validation
 
-Signal + anomalies detected by the Isolation Forest:
-
-![Simulation plot](results/simulation_plot.png)
-
-Confusion matrix of a recorded full-pipeline run:
-
-![Confusion matrix](docs/confusion_matrix.png)
-
-Report of the same run (see `results/evaluation_results.txt`):
+Signal + point-anomalies detected by the original Isolation Forest
+(seeded run, see `results/simulation_plot.png` & recorded evaluation):
 
 | | Precision | Recall | F1 |
 |---|---|---|---|
 | Normal | 0.94 | 0.99 | 0.96 |
 | **Anomaly** | **0.84** | **0.42** | **0.56** |
 
-> 93% overall accuracy, but an anomaly recall of 0.42 — exactly the kind
-> of honest finding this project is built to surface: unsupervised
-> detection alone **misses more than half of the failures**. Growing
-> labeled data or a supervised/hybrid scoring stage is the natural next
-> step (see [Roadmap](#-roadmap)).
+> 93% strict accuracy — but recall 0.42 on the anomaly: exactly the
+> kind of honest finding this project surfaces and then fixes.
+
+Because a detector whose results depend on the run is worthless, the
+pipeline ships with a **Monte-Carlo reliability audit**
+(`scripts/reliability_audit.py`, 200 independent runs):
+
+| Detector | Point recall (16σ fault) | Fault episodes detected | Alarm latency (med) |
+|---|---|---|---|
+| Isolation Forest alone *(original)* | 0.44 ± 0.02 | 100 % | 0 pt |
+| **Hybrid: IF + seasonal residual** *(built during this audit)* | **1.00 ± 0.00** | 100 % | 0 pt |
+
+Two structural findings from this audit, both documented in
+`results/reliability_report.txt`:
+
+1. **Isolation Forest alone plateaus (~0.44) on *persistent* drifts** —
+   a shifted plateau is not made of isolated points, and
+   `contamination=0.05` can flag at most 25 points out of 500 while the
+   fault covers 50.
+2. The fix is a **hybrid detector**: IF keeps catching point anomalies,
+   and a *seasonal residual* stage (`x[i] − x[i−P]`, period P estimated
+   by bounded autocorrelation) catches the drift — recall 1.0 from
+   ~4× the noise σ, near-zero latency. The latched effect on the next
+   cycle is why strict point-precision reads 0.55; in industrial terms
+   those flags are correct.
+
+Reproducibility is guaranteed: all random draws are seeded
+(`seed=42` by default everywhere) — two runs produce byte-identical
+results.
+
+### Benchmark on NASA C-MAPSS FD001 (real domain data)
+
+`scripts/real_data_benchmark.py` runs the same "fit on healthy, score
+the rest" idea on the public NASA Turbofan dataset (100 engines,
+20 631 sensor cycles): fit Isolation Forest on healthy cycles of engines
+1-80, score engines 81-100 (never seen), detect the 30-cycle pre-failure
+window:
+
+![Real-data benchmark](results/real_data_benchmark.png)
+
+| Metric (hold-out engines 81-100) | Value |
+|---|---|
+| AUC-ROC (pre-failure vs healthy) | **0.984** |
+| AUC-PR | **0.923** |
+| Engines with a detected pre-failure phase | **20/20** |
+| Lead time of the first alarm | **~29 cycles before failure** |
+
+Run it yourself (dataset auto-downloaded if missing):
+
+```bash
+python scripts/real_data_benchmark.py     # real NASA data
+python scripts/reliability_audit.py 200   # Monte-Carlo audit
+```
 
 ## 🚀 Getting started
 
@@ -89,25 +131,31 @@ Outputs land in `results/` (CSV stream, text reports, `simulation_plot.png`).
 ```
 .
 ├── data/                       # generated sensor data (demo stream)
+│   └── CMAPSSData/train_FD001.txt   # NASA Turbofan FD001 (real data)
 ├── scripts/
 │   ├── generate_data.py        # synthetic sensors (temp CPU, VCC, fan RPM)
 │   ├── data_preprocessing.py   # Min-Max + sliding windows for the LSTM
 │   ├── lstm_model.py           # stacked LSTM → RUL regression head
 │   ├── maintenance_simulator.py# IsolationForest + fault injection + plot
 │   ├── evaluation.py           # confusion matrix, precision/recall/F1
+│   ├── reliability_audit.py    # Monte-Carlo audit (seeds, mag sweep)
+│   ├── real_data_benchmark.py  # NASA C-MAPSS hold-out benchmark
 │   └── read_results.py         # re-read saved experiment outputs
 ├── results/                    # CSV / reports / plots from recorded runs
 ├── notebooks/read_results.ipynb# quick exploration notebook
-└── .github/workflows/          # CI: lint + full pipeline smoke test (3.10–3.12)
+└── .github/workflows/          # CI: lint + pipeline + audit + real benchmark
 ```
 
 ## 🗺️ Roadmap
 
-- [ ] Supervised / hybrid scoring to raise anomaly recall (currently 0.44)
+- [x] ~~Raise anomaly recall~~ **done** — hybrid detector reaches 1.0
+      point recall on persistent drifts (see Reliability)
+- [x] ~~Validate on real data~~ **done** — NASA C-MAPSS FD001:
+      AUC-ROC 0.98 on hold-out engines
 - [ ] Real RUL training loop (`lstm_model.py` currently defines the architecture)
-- [ ] Public datasets: NASA C-MAPSS, Microsoft Azure predictive-maintenance
-- [ ] Structured logging of runs (`mlflow` or CSV-only experiment tracker)
-- [ ] ROC-AUC / PR-AUC curves for threshold-free comparison
+- [ ] ROC-AUC / PR-AUC curves for threshold-free detection on synthetic data
+- [ ] Structured logging of runs (mlflow or CSV-only experiment tracker)
+- [ ] Multi-sensor fusion (temperature + voltage + fan jointly)
 
 ## 🤝 Contributing
 
