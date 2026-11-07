@@ -1,0 +1,16 @@
+BENCHMARK SUR DONNÉES RÉELLES — NASA C-MAPSS FD001
+==========================================================
+Jeu de données : 100 turbofans, 20 631 cycles, 18 capteurs informatifs.
+Entraînement : cycles sains des moteurs 1-80 · Test : moteurs 81-100 (hold-out, jamais vus).
+
+Phase pré-panne en test (≤ 30 cycles avant fin de vie) : 620 cycles / 4493
+
+AUC-ROC (discrimination pré-panne vs sain) : 0.984
+AUC-PR  (précision-rappel)                 : 0.923
+Moteurs pré-panne détectés (événement)     : 20/20
+Latence de la 1re alarme (moy. cycles avant panne) : 29
+
+Interprétation : le score de l'Isolation Forest — entraîné
+UNIQUEMENT sur la phase saine de moteurs distincts de ceux du
+test — se dégrade significativement à l'approche de la panne
+réelle. Le pipeline généralise aux données réelles.
