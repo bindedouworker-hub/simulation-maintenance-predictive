@@ -1,0 +1,41 @@
+name: 🐞 Rapport de bug
+description: Quelque chose ne fonctionne pas comme attendu
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Merci de décrire le problème en détail.
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: Que s'est-il passé ?
+      description: Étapes de reproduction + comportement attendu vs réel
+      placeholder: |
+        1. Exécuter `python scripts/…`
+        2. Erreur / résultat inattendu
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Zone concernée
+      options:
+        - Génération de données (generate_data)
+        - Simulateur / Isolation Forest
+        - Prétraitement (fenêtres glissantes)
+        - LSTM (RUL)
+        - Évaluation / métriques
+        - Notebook
+        - CI / installation
+  - type: input
+    id: env
+    attributes:
+      label: Environnement
+      placeholder: Python 3.12 · Ubuntu 24.04 · pandas 2.x …
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      options:
+        - label: J'ai cherché dans les issues existantes

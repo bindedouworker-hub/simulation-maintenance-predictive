@@ -1,0 +1,29 @@
+name: ✨ Proposition d'amélioration
+description: Suggérer une évolution du projet
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problème à résoudre
+      description: Quelle est la limite actuelle ?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Solution proposée
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Zone concernée
+      options:
+        - Génération de données (generate_data)
+        - Simulateur / Isolation Forest
+        - Prétraitement (fenêtres glissantes)
+        - LSTM (RUL)
+        - Évaluation / métriques
+        - Notebook
+        - CI / installation
