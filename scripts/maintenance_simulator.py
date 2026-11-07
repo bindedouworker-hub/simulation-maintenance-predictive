@@ -5,8 +5,9 @@ from sklearn.ensemble import IsolationForest
 import os
 
 class MaintenanceSimulator:
-    def __init__(self, n_samples=1000):
+    def __init__(self, n_samples=1000, seed=42):
         self.n_samples = n_samples
+        self.rng = np.random.default_rng(seed)
         self.data = None
         self.model = IsolationForest(contamination=0.05, random_state=42)
 
@@ -14,10 +15,11 @@ class MaintenanceSimulator:
         """
         Simule le fonctionnement normal d'un composant (ex: Température CPU).
         Combine une onde sinusoïdale (cycle journalier) et du bruit gaussien.
+        Graine fixe par défaut : runs reproductibles (voir scripts/reliability_audit.py).
         """
         time = np.linspace(0, 50, self.n_samples)
         # Signal de base + Bruit aléatoire
-        signal = 20 + 5 * np.sin(time) + np.random.normal(0, 0.5, self.n_samples)
+        signal = 20 + 5 * np.sin(time) + self.rng.normal(0, 0.5, self.n_samples)
         self.data = pd.DataFrame({'value': signal})
         print("[INFO] Données saines générées.")
 

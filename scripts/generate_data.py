@@ -2,21 +2,26 @@ import numpy as np
 import pandas as pd
 import os
 
-def generate_sensor_data(n_samples=1000):
+def generate_sensor_data(n_samples=1000, seed=42):
     """
     Génère des données de capteurs simulées pour la maintenance prédictive.
     Inclut cpu_temperature, voltage_vcc, fan_speed_rpm.
+
+    Graine fixe par défaut (seed=42) : deux exécutions produisent
+    exactement les mêmes données — conditions requises pour toute
+    comparaison de résultats. Choisir seed=None pour un tirage aléatoire.
     """
+    rng = np.random.default_rng(seed)
     time = np.linspace(0, 100, n_samples)
-    
+
     # Température CPU: base 40°C + sinusoïde + bruit
-    cpu_temp = 40 + 10 * np.sin(time / 10) + np.random.normal(0, 2, n_samples)
-    
+    cpu_temp = 40 + 10 * np.sin(time / 10) + rng.normal(0, 2, n_samples)
+
     # Tension VCC: stable autour de 3.3V + petit bruit
-    voltage = 3.3 + np.random.normal(0, 0.1, n_samples)
-    
+    voltage = 3.3 + rng.normal(0, 0.1, n_samples)
+
     # Vitesse ventilateur: proportionnelle à la température + bruit
-    fan_speed = 1000 + (cpu_temp - 40) * 50 + np.random.normal(0, 50, n_samples)
+    fan_speed = 1000 + (cpu_temp - 40) * 50 + rng.normal(0, 50, n_samples)
     
     data = pd.DataFrame({
         'cpu_temperature': cpu_temp,

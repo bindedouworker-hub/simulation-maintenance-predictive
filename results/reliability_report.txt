@@ -1,0 +1,39 @@
+AUDIT DE FIABILITÉ DU DÉTECTEUR D'ANOMALIES
+============================================================
+Monte-Carlo : 200 graines × magnitude 8.0 (= 16× σ du bruit)
+Épisode de panne : [400, 450) sur 500 points
+
+
+▸ IF seul (actuel)
+  rappel point   : 0.43 ± 0.02   (min 0.36)
+  précision point: 0.87 ± 0.04
+  F1 point       : 0.58
+  épisodes détectés : 100% (200/200 runs)
+  latence d'alarme  : méd 0 pts · p95 0 pts
+  fausses alertes (partie saine) : 3.0 en moyenne par run
+
+▸ Hybride IF + résidu saisonnier (proposé)
+  rappel point   : 1.00 ± 0.00   (min 1.00)
+  précision point: 0.55 ± 0.01
+  F1 point       : 0.71
+  épisodes détectés : 100% (200/200 runs)
+  latence d'alarme  : méd 0 pts · p95 0 pts
+  fausses alertes (partie saine) : 3.1 en moyenne par run
+
+
+SENSIBILITÉ À LA MAGNITUDE DE LA DÉRIVE
+------------------------------------------------------------
+  IF seul (actuel) — mag  2×σ bruit: rappel 0.07
+  IF seul (actuel) — mag  4×σ bruit: rappel 0.23
+  IF seul (actuel) — mag  6×σ bruit: rappel 0.36
+  IF seul (actuel) — mag  8×σ bruit: rappel 0.43
+  IF seul (actuel) — mag 12×σ bruit: rappel 0.44
+  Hybride IF + résidu saisonnier (proposé) — mag  2×σ bruit: rappel 0.29
+  Hybride IF + résidu saisonnier (proposé) — mag  4×σ bruit: rappel 0.98
+  Hybride IF + résidu saisonnier (proposé) — mag  6×σ bruit: rappel 1.00
+  Hybride IF + résidu saisonnier (proposé) — mag  8×σ bruit: rappel 1.00
+  Hybride IF + résidu saisonnier (proposé) — mag 12×σ bruit: rappel 1.00
+
+Lecture : l'IF seul plafonne (~0.42 sur ce scénario) car un plateau
+décalé n'est pas un point isolé ; l'hybride rend la dérive persistante
+détectable dès ~4× σ avec latence quasi nulle.
