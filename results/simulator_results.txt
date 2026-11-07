@@ -1,7 +1,7 @@
-Résultats de la Simulation de Maintenance
+RÃ©sultats de la Simulation de Maintenance
 =====================================
-Échantillons totaux: 500
-Anomalies détectées: 25
-Paramètres du modèle: contamination=0.05
-Intervalle de panne injectée: [400, 450]
+Ã‰chantillons totaux: 500
+Anomalies dÃ©tectÃ©es: 25
+ParamÃ¨tres du modÃ¨le: contamination=0.05
+Intervalle de panne injectÃ©e: [400, 450]
 Magnitude de la panne: 8
